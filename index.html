@@ -1,0 +1,234 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Management Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-database"></i> Database Dashboard</h1>
+            <div class="header-info">
+                <span id="connection-status" class="status-connected">
+                    <i class="fas fa-circle"></i> Connected
+                </span>
+                <span id="last-update">Last updated: <span id="update-time">--:--:--</span></span>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Query Input Section -->
+            <section class="card query-section">
+                <h2><i class="fas fa-terminal"></i> SQL Query Interface</h2>
+                <div class="query-input">
+                    <textarea id="sql-query" placeholder="Enter your SQL query here... 
+Example: SELECT * FROM users LIMIT 10"></textarea>
+                    <div class="query-buttons">
+                        <button onclick="executeQuery()" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Execute Query
+                        </button>
+                        <button onclick="clearQuery()" class="btn btn-secondary">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                        <select id="query-presets">
+                            <option value="">Sample Queries...</option>
+                            <option value="SELECT * FROM users LIMIT 10">Get Users</option>
+                            <option value="SELECT COUNT(*) as total FROM users">Count Users</option>
+                            <option value="SHOW TABLES">Show Tables</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Database Tables Section -->
+            <section class="card tables-section">
+                <h2><i class="fas fa-table"></i> Database Tables</h2>
+                <div class="tables-list" id="tables-list">
+                    <!-- Tables will be loaded here -->
+                    <div class="loading">Loading tables...</div>
+                </div>
+            </section>
+
+            <!-- Query Results Section -->
+            <section class="card results-section">
+                <h2><i class="fas fa-list"></i> Query Results</h2>
+                <div class="results-info">
+                    <span id="row-count">Rows: 0</span>
+                    <span id="execution-time">Time: 0ms</span>
+                </div>
+                <div class="table-container">
+                    <table id="results-table">
+                        <thead>
+                            <tr id="table-headers">
+                                <!-- Headers will be populated by JavaScript -->
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Results will be populated here -->
+                            <tr>
+                                <td colspan="5" class="no-data">No data to display. Run a query to see results.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Database Statistics -->
+            <section class="card stats-section">
+                <h2><i class="fas fa-chart-bar"></i> Database Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-tables">0</div>
+                        <div class="stat-label">Total Tables</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-rows">0</div>
+                        <div class="stat-label">Total Rows</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="db-size">0 MB</div>
+                        <div class="stat-label">Database Size</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="query-count">0</div>
+                        <div class="stat-label">Queries Today</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>Database Dashboard &copy; 2024 | <span id="current-year"></span></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<!-- Enhanced Query Library Section -->
+<section class="card library-section">
+    <h2><i class="fas fa-book"></i> MHC Query Library</h2>
+    
+    <!-- Section Navigation -->
+    <div class="section-navigation">
+        <div class="section-tabs" id="section-tabs">
+            <button class="section-tab active" onclick="filterBySection('all')">
+                <i class="fas fa-th"></i> All Sections
+            </button>
+            <button class="section-tab" onclick="filterBySection('demographics')">
+                <i class="fas fa-users"></i> Demographics
+            </button>
+            <button class="section-tab" onclick="filterBySection('mental_health')">
+                <i class="fas fa-brain"></i> Mental Health
+            </button>
+            <button class="section-tab" onclick="filterBySection('criminal_history')">
+                <i class="fas fa-gavel"></i> Criminal History
+            </button>
+            <button class="section-tab" onclick="filterBySection('performance')">
+                <i class="fas fa-chart-line"></i> Performance
+            </button>
+            <button class="section-tab" onclick="filterBySection('analytics')">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </button>
+        </div>
+    </div>
+    
+    <!-- Search and Filter Controls -->
+    <div class="library-controls">
+        <div class="control-group">
+            <div class="search-box">
+                <input type="text" id="query-search" placeholder="Search queries..." onkeyup="searchQueries()">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="filter-group">
+                <select id="query-type-filter" onchange="filterByType()">
+                    <option value="all">All Query Types</option>
+                    <option value="select">SELECT Queries</option>
+                    <option value="insert">INSERT Queries</option>
+                    <option value="update">UPDATE Queries</option>
+                    <option value="delete">DELETE Queries</option>
+                    <option value="create">CREATE Queries</option>
+                    <option value="complex">Complex Queries</option>
+                </select>
+                <select id="sort-by" onchange="sortQueries()">
+                    <option value="section">Sort by Section</option>
+                    <option value="name">Sort by Name</option>
+                    <option value="type">Sort by Type</option>
+                    <option value="usage">Sort by Usage</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Query Statistics -->
+    <div class="query-stats">
+        <div class="stat-badge">
+            <span class="stat-label">Total Queries:</span>
+            <span class="stat-value" id="total-queries-count">0</span>
+        </div>
+        <div class="stat-badge">
+            <span class="stat-label">Current Section:</span>
+            <span class="stat-value" id="current-section">All</span>
+        </div>
+        <div class="stat-badge">
+            <span class="stat-label">Showing:</span>
+            <span class="stat-value" id="showing-count">0</span>
+        </div>
+    </div>
+    
+    <!-- Queries Container -->
+    <div class="queries-container" id="queries-container">
+        <div class="loading-queries">
+            <div class="spinner"></div>
+            <p>Loading query library from SQL files...</p>
+        </div>
+    </div>
+    
+    <!-- Library Actions -->
+    <div class="library-actions">
+        <button onclick="refreshQueryLibrary()" class="btn btn-primary">
+            <i class="fas fa-sync-alt"></i> Reload SQL Files
+        </button>
+        <button onclick="saveCurrentQuery()" class="btn btn-success">
+            <i class="fas fa-save"></i> Save Current Query
+        </button>
+        <button onclick="showAllQueriesInEditor()" class="btn btn-info">
+            <i class="fas fa-code"></i> View All in Editor
+        </button>
+        <div class="view-toggle">
+            <button onclick="toggleViewMode('grid')" class="view-btn active" title="Grid View">
+                <i class="fas fa-th"></i>
+            </button>
+            <button onclick="toggleViewMode('list')" class="view-btn" title="List View">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+</section>
+<!-- Database Schema Inspector -->
+<section class="card schema-section">
+    <h2><i class="fas fa-sitemap"></i> Database Schema</h2>
+    
+    <div class="schema-controls">
+        <button onclick="showDatabaseSchema()" class="btn btn-primary">
+            <i class="fas fa-eye"></i> Show All Tables & Columns
+        </button>
+        <button onclick="testAllQueries()" class="btn btn-warning">
+            <i class="fas fa-vial"></i> Test All Queries
+        </button>
+        <button onclick="adaptQueriesToSchema()" class="btn btn-success">
+            <i class="fas fa-magic"></i> Auto-Adapt Queries
+        </button>
+    </div>
+    
+    <div class="schema-container" id="schema-container">
+        <div class="no-data">Click "Show All Tables & Columns" to see database structure</div>
+    </div>
+</section>
+<button onclick="debugDatabase()" class="btn btn-small btn-warning" style="margin-left: 10px;">
+    <i class="fas fa-bug"></i> Debug
+</button>

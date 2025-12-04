@@ -1,0 +1,24 @@
+=== SAMPLE QUERY OUTPUTS ===
+Section 1: Demographics
+FY19-20|25
+FY21|21
+FY22|10
+FY23|11
+FY24|9
+FY25|11
+Male|55|35.8|19|62
+Female|32|33.7|20|49
+White|63|80.77
+Native American|10|12.82
+
+Section 2: Mental Health
+Bipolar Present|27|11|40.74
+Any MH Diagnosis|86|38|44.19
+Mental Health Treatment|89|87|102.3
+Chemical Dependency Treatment|0|87|0.0
+2019-2020|25|13|52.0
+2021|21|14|66.67
+2022|10|8|80.0
+2023|11|7|63.64
+2024|9|6|66.67
+Other|11|10|90.91

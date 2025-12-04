@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test MHC_Project.db</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+</head>
+<body>
+    <h1>Testing MHC_Project.db</h1>
+    <div id="output"></div>
+    
+    <script>
+        async function testDatabase() {
+            const output = document.getElementById('output');
+            
+            try {
+                // Load database
+                const response = await fetch('MHC_Project.db');
+                const arrayBuffer = await response.arrayBuffer();
+                const SQL = await window.initSqlJs();
+                const db = new SQL.Database(new Uint8Array(arrayBuffer));
+                
+                // List all tables
+                const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
+                
+                output.innerHTML = '<h2>Tables in your database:</h2><ul>';
+                
+                if (tables.length > 0) {
+                    tables[0].values.forEach(table => {
+                        const tableName = table[0];
+                        output.innerHTML += `<li><strong>${tableName}</strong>`;
+                        
+                        // Show table structure
+                        try {
+                            const structure = db.exec(`PRAGMA table_info("${tableName}")`);
+                            output.innerHTML += '<ul>';
+                            structure[0].values.forEach(col => {
+                                output.innerHTML += `<li>${col[1]} (${col[2]})</li>`;
+                            });
+                            output.innerHTML += '</ul>';
+                        } catch (e) {
+                            output.innerHTML += ' - Error reading structure';
+                        }
+                        
+                        output.innerHTML += '</li>';
+                    });
+                }
+                
+                output.innerHTML += '</ul>';
+                
+            } catch (error) {
+                output.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        testDatabase();
+    </script>
+</body>
+</html>
